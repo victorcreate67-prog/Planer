@@ -1,0 +1,674 @@
+:root {
+    --bg-dark: #0f172a;
+    --primary: #8b5cf6;
+    --primary-light: #a78bfa;
+    --accent: #06b6d4;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(16px);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    background-image: url('bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 480px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Header Styles */
+header {
+    padding: 24px;
+    padding-top: 48px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+h1 span {
+    color: var(--primary);
+}
+
+.icon-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Day Switcher */
+.day-switcher {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 14px;
+    margin-bottom: 24px;
+}
+
+.day-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.day-tab.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Praise Message Container */
+/* Settings Styles */
+.settings-group {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.settings-item label {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.settings-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.toggle-container {
+    position: relative;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-container input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--glass);
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+#daily-plan-time-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+#setting-daily-time {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 12px;
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+    color-scheme: dark;
+}
+
+/* Monthly Goal Cards */
+.goal-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    padding: 24px;
+    border-radius: 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-lg);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.goal-title {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.goal-progress-text {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.goal-progress-text span {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.goal-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.control-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.goal-delete {
+    margin-left: auto;
+}
+
+
+.praise-message {
+    background: linear-gradient(90deg, #fceabb, #f8b500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    animation: slideUpIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideUpIn {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+.praise-message.fade-out {
+    animation: fadeOutDown 0.5s ease forwards;
+}
+
+@keyframes fadeOutDown {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(10px); opacity: 0; }
+}
+
+/* Views Management */
+.view {
+    display: none;
+    padding: 0 24px 100px 24px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tasks View */
+.date-header {
+    margin-bottom: 24px;
+}
+
+.date-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.date-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.task-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.task-card.completed {
+    opacity: 0.6;
+    transform: scale(0.98);
+}
+
+.checkbox {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.task-card.completed .checkbox {
+    background: var(--primary);
+}
+
+.checkbox::after {
+    content: '✓';
+    color: white;
+    font-size: 16px;
+    display: none;
+}
+
+.task-card.completed .checkbox::after {
+    display: block;
+}
+
+.task-text {
+    flex-grow: 1;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.task-reminder {
+    font-size: 11px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.task-reminder svg {
+    width: 12px;
+    height: 12px;
+}
+
+.task-card.completed .task-text {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* FAB */
+.fab-container {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 100;
+}
+
+.fab {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    font-size: 32px;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.fab:active {
+    transform: scale(0.9) rotate(90deg);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-dark);
+    border: 1px solid var(--glass-border);
+    padding: 32px;
+    border-radius: 28px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.modal h3 {
+    margin-bottom: 20px;
+}
+
+#task-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 16px;
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.modal-field {
+    margin-bottom: 24px;
+}
+
+.modal-field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.modal-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.modal-row .modal-field {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+#task-time, #goal-target, #goal-unit {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 12px;
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+    color-scheme: dark;
+}
+
+#task-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.primary-btn, .secondary-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.secondary-btn {
+    background: var(--glass);
+    color: var(--text-muted);
+}
+
+/* Report Styles */
+.view-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 24px;
+    padding: 20px;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.ring-chart {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) 0%, rgba(255,255,255,0.1) 0%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.ring-chart::before {
+    content: '';
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    background: #1a1e2e;
+    border-radius: 50%;
+}
+
+.chart-value {
+    position: relative;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.distraction-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.distraction-name { color: var(--text-main); }
+.distraction-time { color: var(--accent); font-weight: 600; }
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 120px;
+    padding-top: 20px;
+}
+
+.bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.bar {
+    width: 100%;
+    background: var(--glass);
+    border-radius: 6px;
+    min-height: 4px;
+    transition: height 1s ease-out;
+    position: relative;
+}
+
+.bar.highlight {
+    background: var(--primary);
+}
+
+.day-label {
+    font-size: 10px;
+    color: var(--text-muted);
+}

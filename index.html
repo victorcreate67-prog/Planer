@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusPlanner - Умный планировщик</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
+    <meta name="theme-color" content="#8b5cf6">
+    <link rel="apple-touch-icon" href="icon.png">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="header-content">
+                <h1>Focus<span>Planner</span></h1>
+                <div class="header-actions">
+                    <button id="show-settings-btn" class="icon-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                    </button>
+                    <button id="show-report-btn" class="icon-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20V16"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <!-- Task List View -->
+            <section id="tasks-view" class="view active">
+                <div class="date-header">
+                    <h2 id="current-date">Сегодня</h2>
+                    <p id="task-summary">0 задач выполнено</p>
+                </div>
+
+                <div class="day-switcher glass">
+                    <button class="day-tab active" data-day="today">Сегодня</button>
+                    <button class="day-tab" data-day="tomorrow">Завтра</button>
+                    <button class="day-tab" data-day="monthly">Месяц</button>
+                </div>
+
+                <div id="praise-container"></div>
+                
+                <div id="task-list" class="task-container">
+                    <!-- Tasks will be injected here -->
+                </div>
+
+                <div class="fab-container">
+                    <button id="add-task-btn" class="fab">+</button>
+                </div>
+            </section>
+
+            <!-- Report View -->
+            <section id="report-view" class="view">
+                <div class="view-header">
+                    <button id="back-to-tasks" class="icon-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <h2>Еженедельный отчет</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card glass">
+                        <h3>Продуктивность</h3>
+                        <div class="chart-container">
+                            <div class="ring-chart" id="productivity-ring">
+                                <span class="chart-value">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card glass">
+                        <h3>Дистракции</h3>
+                        <p class="stat-subtitle">Приложения-похитители времени</p>
+                        <div id="distraction-list" class="mini-list">
+                            <!-- Distractions injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card glass full-width">
+                    <h3>Активность (7 дней)</h3>
+                    <div class="bar-chart" id="weekly-bar-chart">
+                        <!-- Bars injected here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- New Task Modal -->
+        <div id="task-modal" class="modal">
+            <div class="modal-content glass">
+                <h3>Новая задача</h3>
+                <input type="text" id="task-input" placeholder="Что нужно сделать?">
+                <div class="modal-field">
+                    <label for="task-time">Время напоминания (опционально)</label>
+                    <input type="time" id="task-time">
+                </div>
+                <div class="modal-actions">
+                    <button id="cancel-task" class="secondary-btn">Отмена</button>
+                    <button id="save-task" class="primary-btn">Создать</button>
+                </div>
+            </div>
+        </div>
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content glass">
+                <h3>Настройки</h3>
+                
+                <div class="settings-group">
+                    <div class="settings-item">
+                        <label>План на день</label>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="setting-daily-plan" checked>
+                            <span class="slider"></span>
+                        </div>
+                    </div>
+                    <p class="settings-hint">Добавлять задачу «Составить план» каждое утро</p>
+                </div>
+
+                <div class="settings-group" id="daily-plan-time-group">
+                    <label for="setting-daily-time">Время напоминания</label>
+                    <input type="time" id="setting-daily-time" value="08:00">
+                </div>
+
+                <div class="modal-actions">
+                    <button id="close-settings" class="primary-btn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Goal Modal -->
+        <div id="monthly-goal-modal" class="modal">
+            <div class="modal-content glass">
+                <h3>Цель на месяц</h3>
+                <input type="text" id="goal-input" placeholder="Название (напр. Пробежать)">
+                
+                <div class="modal-row">
+                    <div class="modal-field">
+                        <label>Цель</label>
+                        <input type="number" id="goal-target" placeholder="100">
+                    </div>
+                    <div class="modal-field">
+                        <label>Ед. изм.</label>
+                        <input type="text" id="goal-unit" placeholder="км">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="cancel-monthly-goal" class="secondary-btn">Отмена</button>
+                    <button id="save-monthly-goal" class="primary-btn">Создать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
