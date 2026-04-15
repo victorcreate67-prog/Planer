@@ -457,6 +457,30 @@ function setupEventListeners() {
             saveData();
         };
     });
+
+    const checkUpdateBtn = document.getElementById('check-update-btn');
+    if (checkUpdateBtn) {
+        checkUpdateBtn.onclick = () => {
+            if (window.swReg) {
+                checkUpdateBtn.innerText = 'Проверка...';
+                window.swReg.update().then(reg => {
+                    if (reg && reg.waiting) {
+                        if (confirm('Доступно обновление! Перезагрузить приложение сейчас?')) {
+                            window.location.reload();
+                        }
+                    } else {
+                        alert('У вас установлена последняя версия или обновление загружается в фоне. Попробуйте перезапустить приложение через минуту.');
+                        checkUpdateBtn.innerText = 'Проверить обновления';
+                    }
+                }).catch(() => {
+                    alert('Ошибка при проверке. Проверьте интернет-соединение.');
+                    checkUpdateBtn.innerText = 'Проверить обновления';
+                });
+            } else {
+                alert('Service Worker не найден. Попробуйте обновить страницу вручную.');
+            }
+        };
+    }
 }
 
 function saveData() {

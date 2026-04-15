@@ -148,8 +148,9 @@
                     </div>
                 </div>
 
-                <div class="modal-actions">
-                    <button id="close-settings" class="primary-btn">Закрыть</button>
+                <div class="modal-actions" style="margin-top: 24px; flex-direction: column; gap: 8px;">
+                    <button id="check-update-btn" class="secondary-btn" style="width: 100%; font-size: 12px; opacity: 0.7;">Проверить обновления</button>
+                    <button id="close-settings" class="primary-btn" style="width: 100%;">Закрыть</button>
                 </div>
             </div>
         </div>
@@ -181,8 +182,11 @@
 
     <script src="app.js"></script>
     <script>
+        window.swReg = null;
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                window.swReg = reg;
+            });
         }
     </script>
 </body>
