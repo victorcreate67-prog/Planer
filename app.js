@@ -22,7 +22,8 @@ let stats = JSON.parse(localStorage.getItem('stats')) || {
 };
 let settings = JSON.parse(localStorage.getItem('settings')) || {
     dailyPlanEnabled: true,
-    dailyPlanTime: "08:00"
+    dailyPlanTime: "08:00",
+    theme: 'default'
 };
 
 let currentViewDate = getTodayStr();
@@ -63,11 +64,13 @@ const settingDailyTimeInput = document.getElementById('setting-daily-time');
 function init() {
     migrateTasks();
     applySettings();
+    applyTheme(settings.theme);
     checkDailyPlan();
     renderMain();
     updateDateDisplay();
     setupEventListeners();
     updateWeeklyStats();
+    updateNotificationUI();
     
     // Reminder Check Interval
     setInterval(checkReminders, 30000);
@@ -88,6 +91,13 @@ function migrateTasks() {
 function applySettings() {
     settingDailyPlanBox.checked = settings.dailyPlanEnabled;
     settingDailyTimeInput.value = settings.dailyPlanTime;
+}
+
+function applyTheme(themeName) {
+    document.body.className = themeName === 'default' ? '' : `theme-${themeName}`;
+    document.querySelectorAll('.theme-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.theme === themeName);
+    });
 }
 
 function checkDailyPlan() {
@@ -226,7 +236,9 @@ function saveTask() {
         tasks.push({ text, completed: false, reminderTime: time || null, notified: false, date: currentViewDate });
         taskInput.value = ''; taskTime.value = '';
         taskModal.classList.remove('active');
-        if (time && Notification.permission !== 'granted') Notification.requestPermission();
+        if (time && Notification.permission !== 'granted') {
+            Notification.requestPermission().then(updateNotificationUI);
+        }
         renderTasks();
     }
 }
@@ -272,17 +284,71 @@ function triggerReward() {
 function checkReminders() {
     const now = new Date();
     const today = getTodayStr();
-    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    // Calculate time 5 minutes from now for the "early" notification
+    const futureDate = new Date(now.getTime() + 5 * 60000); 
+    const futureTime = `${String(futureDate.getHours()).padStart(2, '0')}:${String(futureDate.getMinutes()).padStart(2, '0')}`;
+    
     tasks.forEach((task) => {
-        if (!task.completed && task.date === today && task.reminderTime === currentTime && !task.notified) {
-            showNotification('FocusPlanner', task.text);
-            task.notified = true; saveData();
+        if (!task.completed && task.date === today && task.reminderTime === futureTime && !task.notified) {
+            showNotification('FocusPlanner', `Через 5 минут: ${task.text}`);
+            task.notified = true; 
+            saveData();
         }
     });
 }
 
-function showNotification(title, body) {
-    if (Notification.permission === 'granted') new Notification(title, { body, icon: 'icon.png', vibrate: [200, 100, 200] });
+async function showNotification(title, body) {
+    if (Notification.permission === 'granted') {
+        if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            reg.showNotification(title, {
+                body,
+                icon: 'icon.png',
+                vibrate: [200, 100, 200],
+                badge: 'icon.png',
+                tag: 'task-reminder-' + Date.now()
+            });
+        } else {
+            new Notification(title, { body, icon: 'icon.png' });
+        }
+    }
+}
+
+function updateNotificationUI() {
+    const statusIcon = document.getElementById('notif-status-icon');
+    const statusText = document.getElementById('notif-status-text');
+    const requestBtn = document.getElementById('request-notif-btn');
+    
+    if (!statusIcon || !statusText) return;
+
+    const permission = Notification.permission;
+    statusIcon.className = 'status-dot ' + permission;
+    
+    if (permission === 'granted') {
+        statusText.innerText = 'Разрешено';
+        requestBtn.style.display = 'none';
+    } else if (permission === 'denied') {
+        statusText.innerText = 'Заблокировано';
+        requestBtn.style.display = 'inline-block';
+        requestBtn.innerText = 'Как исправить?';
+        requestBtn.onclick = () => alert('Пожалуйста, разрешите уведомления в настройках вашего браузера/телефона для этого сайта.');
+    } else {
+        statusText.innerText = 'Требуется разрешение';
+        requestBtn.style.display = 'inline-block';
+        requestBtn.innerText = 'Разрешить';
+        requestBtn.onclick = () => {
+            Notification.requestPermission().then(updateNotificationUI);
+        };
+    }
+}
+
+function sendTestNotification() {
+    if (Notification.permission !== 'granted') {
+        alert('Сначала разрешите уведомления!');
+        return;
+    }
+    showNotification('FocusPlanner', 'Это тестовое уведомление. Если вы его видите, значит всё работает! 🚀');
 }
 
 // --- Stats & Reporting ---
@@ -371,6 +437,25 @@ function setupEventListeners() {
 
     [taskModal, settingsModal, monthlyGoalModal].forEach(m => {
         if (m) m.onclick = (e) => { if (e.target === m) m.classList.remove('active'); };
+    });
+
+    const testNotifBtn = document.getElementById('test-notif-btn');
+    if (testNotifBtn) testNotifBtn.onclick = sendTestNotification;
+    
+    const requestNotifBtn = document.getElementById('request-notif-btn');
+    if (requestNotifBtn) {
+        // requestNotifBtn click is already handled in updateNotificationUI 
+        // but we'll ensure it's re-checked when settings open
+        showSettingsBtn.addEventListener('click', updateNotificationUI);
+    }
+
+    document.querySelectorAll('.theme-option').forEach(opt => {
+        opt.onclick = () => {
+            const theme = opt.dataset.theme;
+            settings.theme = theme;
+            applyTheme(theme);
+            saveData();
+        };
     });
 }
 

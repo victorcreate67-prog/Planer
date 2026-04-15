@@ -112,6 +112,15 @@
                 <h3>Настройки</h3>
                 
                 <div class="settings-group">
+                    <label>Тема оформления</label>
+                    <div class="theme-picker">
+                        <div class="theme-option active" data-theme="default"></div>
+                        <div class="theme-option" data-theme="emerald"></div>
+                        <div class="theme-option" data-theme="rose"></div>
+                    </div>
+                </div>
+
+                <div class="settings-group">
                     <div class="settings-item">
                         <label>План на день</label>
                         <div class="toggle-container">
@@ -125,6 +134,18 @@
                 <div class="settings-group" id="daily-plan-time-group">
                     <label for="setting-daily-time">Время напоминания</label>
                     <input type="time" id="setting-daily-time" value="08:00">
+                </div>
+
+                <div class="settings-group">
+                    <label>Системные уведомления</label>
+                    <div class="notification-status-box">
+                        <span id="notif-status-icon" class="status-dot"></span>
+                        <span id="notif-status-text">Загрузка...</span>
+                    </div>
+                    <div class="settings-actions-row">
+                        <button id="request-notif-btn" class="secondary-btn small-btn">Разрешить</button>
+                        <button id="test-notif-btn" class="secondary-btn small-btn">Проверить</button>
+                    </div>
                 </div>
 
                 <div class="modal-actions">

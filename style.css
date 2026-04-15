@@ -9,6 +9,23 @@
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-blur: blur(16px);
     --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    --theme-bg: url('bg.png');
+}
+
+/* Emerald Theme Overrides */
+body.theme-emerald {
+    --primary: #10b981;
+    --primary-light: #34d399;
+    --accent: #2dd4bf;
+    --theme-bg: url('bg-emerald.png');
+}
+
+/* Midnight Rose Theme Overrides */
+body.theme-rose {
+    --primary: #f43f5e;
+    --primary-light: #fb7185;
+    --accent: #d946ef;
+    --theme-bg: url('bg-rose.png');
 }
 
 * {
@@ -22,7 +39,7 @@ body {
     font-family: 'Outfit', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
-    background-image: url('bg.png');
+    background-image: var(--theme-bg);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -30,6 +47,7 @@ body {
     display: flex;
     justify-content: center;
     overflow-x: hidden;
+    transition: background-image 0.5s ease;
 }
 
 #app {
@@ -200,6 +218,77 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-family: inherit;
     color-scheme: dark;
 }
+
+.notification-status-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    font-size: 0.9rem;
+    border: 1px solid var(--glass-border);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #64748b;
+}
+
+.status-dot.granted { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+.status-dot.denied { background: #ef4444; }
+.status-dot.default { background: #f59e0b; }
+
+.settings-actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.small-btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    flex: 1;
+}
+
+/* Theme Picker Styles */
+.theme-picker {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.theme-option {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.theme-option.active {
+    border-color: white;
+    transform: scale(1.1);
+}
+
+.theme-option::after {
+    content: '';
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.theme-option[data-theme="default"] { background: linear-gradient(135deg, #8b5cf6, #06b6d4); }
+.theme-option[data-theme="emerald"] { background: linear-gradient(135deg, #10b981, #2dd4bf); }
+.theme-option[data-theme="rose"] { background: linear-gradient(135deg, #f43f5e, #d946ef); }
 
 /* Monthly Goal Cards */
 .goal-card {
