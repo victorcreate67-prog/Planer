@@ -171,7 +171,15 @@ function checkAutoTasks() {
     if (settings.dailyPlanEnabled) {
         const hasDailyTask = tasks.find(t => t.text === "Составить план на день" && t.date === todayStr);
         if (!hasDailyTask) {
-            tasks.unshift({ text: "Составить план на день", completed: false, reminderTime: settings.dailyPlanTime, notified: false, date: todayStr, isAuto: true });
+            tasks.unshift({ 
+                text: "Составить план на день", 
+                completed: false, 
+                reminderTime: settings.dailyPlanTime, 
+                notified: false, 
+                date: todayStr, 
+                isAuto: true,
+                priority: 'high'
+            });
         }
     }
 
@@ -180,7 +188,15 @@ function checkAutoTasks() {
         if (rt.days.includes(todayDay)) {
             const hasTask = tasks.find(t => t.text === rt.text && t.date === todayStr);
             if (!hasTask) {
-                tasks.push({ text: rt.text, completed: false, reminderTime: rt.time || null, notified: false, date: todayStr, isRoutine: true });
+                tasks.push({ 
+                    text: rt.text, 
+                    completed: false, 
+                    reminderTime: rt.time || null, 
+                    notified: false, 
+                    date: todayStr, 
+                    isRoutine: true,
+                    priority: rt.priority || 'none'
+                });
             }
         }
     });
@@ -226,12 +242,25 @@ function renderMain() {
 
 function renderTasks() {
     taskList.innerHTML = '';
-    const filteredTasks = tasks.filter(t => t.date === currentViewDate);
+    
+    // Sort tasks: High > Medium > Low > None. Completed tasks go to the bottom.
+    const priorityWeight = { 'high': 3, 'medium': 2, 'low': 1, 'none': 0, undefined: 0 };
+    
+    const filteredTasks = tasks
+        .map((t, index) => ({...t, originalIndex: index})) // keep track of real index
+        .filter(t => t.date === currentViewDate)
+        .sort((a, b) => {
+            if (a.completed !== b.completed) return a.completed ? 1 : -1;
+            const pA = priorityWeight[a.priority] || 0;
+            const pB = priorityWeight[b.priority] || 0;
+            return pB - pA;
+        });
     
     filteredTasks.forEach((task) => {
-        const realIndex = tasks.indexOf(task);
+        const realIndex = task.originalIndex;
         const card = document.createElement('div');
-        card.className = `task-card ${task.completed ? 'completed' : ''}`;
+        const prioClass = (task.priority && task.priority !== 'none') ? `priority-${task.priority}` : '';
+        card.className = `task-card ${task.completed ? 'completed' : ''} ${prioClass}`;
         
         let reminderHTML = '';
         if (task.reminderTime && !task.completed) {
@@ -263,6 +292,8 @@ function renderRoutine() {
         const card = document.createElement('div');
         card.className = 'task-card';
         const activeDays = rt.days.map(d => daysArr[d]).join(', ');
+        const prioClass = (rt.priority && rt.priority !== 'none') ? `priority-${rt.priority}` : '';
+        card.className = `task-card ${prioClass}`;
         
         card.innerHTML = `
             <div class="task-info">
@@ -321,8 +352,9 @@ function renderProjectDetail(project) {
     projectList.appendChild(header);
 
     project.tasks.forEach((task, tIndex) => {
+        const prioClass = (task.priority && task.priority !== 'none') ? `priority-${task.priority}` : '';
         const taskCard = document.createElement('div');
-        taskCard.className = `task-card ${task.completed ? 'completed' : ''}`;
+        taskCard.className = `task-card ${task.completed ? 'completed' : ''} ${prioClass}`;
         taskCard.innerHTML = `
             <div class="checkbox" onclick="toggleProjectTask('${project.id}', ${tIndex})"></div>
             <div class="task-info">
@@ -552,6 +584,9 @@ function saveTask() {
     const text = taskInput.value.trim();
     if (!text) return;
 
+    const priorityOpt = document.querySelector('#task-priority .priority-opt.active');
+    const priority = priorityOpt ? priorityOpt.dataset.priority : 'none';
+
     if (taskModal.dataset.mode === 'project-task') {
         const pId = taskModal.dataset.projectId;
         const p = projects.find(p => p.id === pId);
@@ -559,7 +594,8 @@ function saveTask() {
             text, 
             completed: false, 
             subtasks: [],
-            reward: taskReward.value.trim() || null 
+            reward: taskReward.value.trim() || null,
+            priority 
         });
     } else if (taskModal.dataset.mode === 'subtask') {
         const pId = taskModal.dataset.projectId;
@@ -568,7 +604,14 @@ function saveTask() {
         if (!p.tasks[tIdx].subtasks) p.tasks[tIdx].subtasks = [];
         p.tasks[tIdx].subtasks.push({ text, completed: false });
     } else {
-        tasks.push({ text, completed: false, reminderTime: taskTime.value || null, notified: false, date: currentViewDate });
+        tasks.push({ 
+            text, 
+            completed: false, 
+            reminderTime: taskTime.value || null, 
+            notified: false, 
+            date: currentViewDate,
+            priority 
+        });
     }
 
     saveData();
@@ -578,9 +621,11 @@ function saveTask() {
 }
 
 function openProjectTaskModal(pId) {
+    resetPriority('#task-priority');
     taskModal.dataset.mode = 'project-task';
     taskModal.dataset.projectId = pId;
     document.getElementById('task-modal-title').innerText = 'Задача проекта';
+    document.getElementById('task-priority-field').style.display = 'block';
     document.getElementById('task-time-field').style.display = 'none';
     taskRewardField.style.display = 'block';
     taskReward.value = '';
@@ -588,9 +633,11 @@ function openProjectTaskModal(pId) {
 }
 
 function openSubtaskModal(pId, tIdx) {
+    resetPriority('#task-priority');
     taskModal.dataset.mode = 'subtask';
     taskModal.dataset.projectId = pId;
     taskModal.dataset.taskIndex = tIdx;
+    document.getElementById('task-priority-field').style.display = 'none';
     document.getElementById('task-modal-title').innerText = 'Подзадача';
     document.getElementById('task-time-field').style.display = 'none';
     taskModal.classList.add('active');
@@ -599,11 +646,16 @@ function openSubtaskModal(pId, tIdx) {
 function saveRoutine() {
     const text = routineInput.value.trim();
     const activeDays = Array.from(document.querySelectorAll('.day-pill.active')).map(p => parseInt(p.dataset.day));
+    
+    const priorityOpt = document.querySelector('#routine-priority .priority-opt.active');
+    const priority = priorityOpt ? priorityOpt.dataset.priority : 'none';
+
     if (text && activeDays.length > 0) {
         routineTasks.push({ 
             text, 
             days: activeDays, 
             time: routineTime.value || null,
+            priority,
             streak: 0,
             maxStreak: 0,
             totalCompletions: 0,
@@ -902,17 +954,35 @@ function setupEventListeners() {
 
     if (cancelImportBtn) cancelImportBtn.onclick = resetScanner;
 
+    function resetPriority(selector) {
+        document.querySelectorAll(`${selector} .priority-opt`).forEach(o => o.classList.remove('active'));
+        document.querySelector(`${selector} .priority-opt[data-priority="none"]`).classList.add('active');
+    }
+
+    document.querySelectorAll('.priority-opt').forEach(opt => {
+        opt.onclick = (e) => {
+            const parentId = e.target.closest('.priority-selector').id;
+            document.querySelectorAll(`#${parentId} .priority-opt`).forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+        };
+    });
+
     addTaskBtn.onclick = () => {
         if (currentViewType === 'monthly') monthlyGoalModal.classList.add('active');
         else {
+            resetPriority('#task-priority');
             taskModal.dataset.mode = 'task';
             document.getElementById('task-modal-title').innerText = 'Новая задача';
+            document.getElementById('task-priority-field').style.display = 'block';
             document.getElementById('task-time-field').style.display = 'block';
             taskRewardField.style.display = 'none';
             taskModal.classList.add('active');
         }
     };
-    addRoutineBtn.onclick = () => routineModal.classList.add('active');
+    addRoutineBtn.onclick = () => {
+        resetPriority('#routine-priority');
+        routineModal.classList.add('active');
+    };
     addProjectBtn.onclick = () => projectModal.classList.add('active');
 
     cancelTaskBtn.onclick = () => taskModal.classList.remove('active');

@@ -149,6 +149,15 @@
                     <label for="task-reward">Награда за выполнение (опционально)</label>
                     <input type="text" id="task-reward" placeholder="Напр: Куплю себе кофе или схожу в кино">
                 </div>
+                <div class="modal-field" id="task-priority-field">
+                    <label>Приоритет</label>
+                    <div class="priority-selector" id="task-priority">
+                        <span class="priority-opt active" data-priority="none">Нет</span>
+                        <span class="priority-opt" data-priority="low">Низкий</span>
+                        <span class="priority-opt" data-priority="medium">Средний</span>
+                        <span class="priority-opt" data-priority="high">Важный</span>
+                    </div>
+                </div>
                 <div class="modal-actions" style="margin-bottom: 12px;">
                     <button id="ai-scan-btn" class="secondary-btn" style="border: 1px dashed var(--accent); color: var(--accent);">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px; height:16px; margin-right:4px;"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -182,6 +191,15 @@
                 <div class="modal-field">
                     <label for="routine-time">Время (опционально)</label>
                     <input type="time" id="routine-time">
+                </div>
+                <div class="modal-field">
+                    <label>Приоритет</label>
+                    <div class="priority-selector" id="routine-priority">
+                        <span class="priority-opt active" data-priority="none">Нет</span>
+                        <span class="priority-opt" data-priority="low">Низкий</span>
+                        <span class="priority-opt" data-priority="medium">Средний</span>
+                        <span class="priority-opt" data-priority="high">Важный</span>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button id="cancel-routine" class="secondary-btn">Отмена</button>
