@@ -316,6 +316,9 @@ function renderProjects() {
     projectList.innerHTML = '';
     projectList.className = 'project-grid';
     
+    // Reset FAB to project creation mode
+    addProjectBtn.onclick = () => projectModal.classList.add('active');
+    
     projects.forEach((p) => {
         const completed = p.tasks.filter(t => t.completed).length;
         const total = p.tasks.length;
@@ -783,6 +786,12 @@ function handleImageFile(file) {
 }
 
 // --- Utils ---
+function resetPriority(selector) {
+    document.querySelectorAll(`${selector} .priority-opt`).forEach(o => o.classList.remove('active'));
+    const defaultOpt = document.querySelector(`${selector} .priority-opt[data-priority="none"]`);
+    if (defaultOpt) defaultOpt.classList.add('active');
+}
+
 function triggerReward() {
     if (typeof confetti === 'function') {
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#fbbf24', '#8b5cf6', '#ffffff'] });
@@ -954,10 +963,6 @@ function setupEventListeners() {
 
     if (cancelImportBtn) cancelImportBtn.onclick = resetScanner;
 
-    function resetPriority(selector) {
-        document.querySelectorAll(`${selector} .priority-opt`).forEach(o => o.classList.remove('active'));
-        document.querySelector(`${selector} .priority-opt[data-priority="none"]`).classList.add('active');
-    }
 
     document.querySelectorAll('.priority-opt').forEach(opt => {
         opt.onclick = (e) => {
