@@ -1,4 +1,6 @@
-const CACHE_NAME = 'planner-v3';
+const CACHE_NAME = 'planner-v4'; // Updated to force cache refresh after fixes
+// Last updated: 2026-04-17T19:12:00
+
 const ASSETS = [
     './',
     './index.html',
