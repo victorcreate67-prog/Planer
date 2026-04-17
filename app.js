@@ -72,6 +72,9 @@ const cancelGoalBtn = document.getElementById('cancel-monthly-goal');
 const showSettingsBtn = document.getElementById('show-settings-btn');
 const settingsModal = document.getElementById('settings-modal');
 const closeSettingsBtn = document.getElementById('close-settings');
+const requestNotifBtn = document.getElementById('request-notif-btn');
+const testNotifBtn = document.getElementById('test-notif-btn');
+const checkUpdateBtn = document.getElementById('check-update-btn');
 
 const currentDateEl = document.getElementById('current-date');
 const taskSummaryEl = document.getElementById('task-summary');
@@ -885,7 +888,11 @@ function updateWeeklyStats() {
 
 function updateNotificationUI() {
     const statusText = document.getElementById('notif-status-text');
+    const statusIcon = document.getElementById('notif-status-icon');
     if (statusText) statusText.innerText = Notification.permission === 'granted' ? 'Разрешено' : 'Требуется разрешение';
+    if (statusIcon) {
+        statusIcon.className = 'status-dot ' + (Notification.permission === 'granted' ? 'granted' : (Notification.permission === 'denied' ? 'denied' : 'default'));
+    }
 }
 
 function saveData() {
@@ -1010,6 +1017,37 @@ function setupEventListeners() {
 
     showSettingsBtn.onclick = () => settingsModal.classList.add('active');
     closeSettingsBtn.onclick = () => settingsModal.classList.remove('active');
+
+    if (requestNotifBtn) {
+        requestNotifBtn.onclick = async () => {
+            const permission = await Notification.requestPermission();
+            updateNotificationUI();
+            if (permission === 'granted') {
+                showNotification('FocusPlanner', 'Уведомления успешно включены!');
+            }
+        };
+    }
+
+    if (testNotifBtn) {
+        testNotifBtn.onclick = () => {
+            showNotification('FocusPlanner', 'Это тестовое уведомление. Оно работает!');
+        };
+    }
+
+    if (checkUpdateBtn) {
+        checkUpdateBtn.onclick = async () => {
+            if (window.swReg) {
+                try {
+                    await window.swReg.update();
+                    alert('Проверка обновлений завершена. Если доступна новая версия, она загрузится при следующем запуске.');
+                } catch (e) {
+                    console.error('Update check failed', e);
+                }
+            } else {
+                alert('Сервис-воркер не найден. Возможно, приложение запущено в небезопасном контексте.');
+            }
+        };
+    }
 
     dayTabs.forEach(tab => {
         tab.onclick = () => {

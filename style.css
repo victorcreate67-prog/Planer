@@ -571,9 +571,10 @@ input:checked + .slider:before { transform: translateX(20px); }
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     z-index: 200;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 24px;
+    overflow-y: auto;
 }
 
 .modal.active {
@@ -581,6 +582,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 .modal-content {
+    margin-top: auto;
+    margin-bottom: auto;
     background: var(--bg-dark);
     border: 1px solid var(--glass-border);
     padding: 32px;
